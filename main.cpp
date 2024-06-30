@@ -48,15 +48,12 @@ void GeneratePasswords() {
 int main() {
     string folderName = "Wordlist Dictionary";
     string fileName = "password.txt";
-    string folderPath = "/" + folderName;
+    string folderPath = folderName;
     string filePath = folderPath + "/" + fileName;
 
     int dir_error = mkdir(folderPath.c_str());
 
-    if (dir_error == true || errno == !EEXIST) {
-        cerr << "Error!, Failed to created directory: " << folderName << endl;
-    }
-    else {
+    if (dir_error == false || errno == EEXIST) {
         cout << "Success!, Directory '" << folderName << "' created or already exists" << endl;
 
         bool useNumbers, useLowercase, useUppercase, useSymbols;
@@ -66,17 +63,30 @@ int main() {
         PromptUser(useNumbers, useLowercase, useUppercase, useSymbols, prefix, passwordLength);
 
         string charset;
-
         if (useNumbers == true) charset += "0123456789";
         if (useLowercase == true) charset += "abcdefghijklmnopqrstuvwxyz";
         if (useUppercase == true) charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         if (useSymbols == true) charset += "!@#$%^&*()_-+=[]{}|;:,.<>?";
+
+        int totalPassword;
+        if (charset.size() != 0 && passwordLength > 0) {
+            totalPassword = pow(charset.size(), passwordLength); // Determine count of total password
+        }
         
+        ofstream outfile(filePath);
+        if (outfile.is_open()) {
+            int count = 0;
+            
+            outfile.close();
+            cout << "\nGenerated passwords saved successfully to: " << filePath << endl;
+        }
+        else {
+             cerr << "Error!, Failed to create file: " << filePath << endl;
+        }
     }
-    
+    else {
+        cerr << "Error!, Failed to create directory: " << folderName << endl;
+    }
 
-
-
-
-return 0;
+    return 0;
 }
