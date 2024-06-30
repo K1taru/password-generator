@@ -33,7 +33,6 @@ void PromptUser(bool& useNumbers, bool& useLowercase, bool& useUppercase, bool& 
     cout << "Include symbols (!@#$%^&*()_-+=[]{}|;:,.<>?)? (1 for yes, 0 for no): ";
     cin >> useSymbols;
 
-
     cout << "Enter the length of each password to generate (in characters): ";
     cin >> passwordLength;
 }
