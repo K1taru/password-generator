@@ -1,0 +1,6 @@
+Password000
+Password001
+Password002
+Password003
+
+generated passwords should be created on this folder 'Wordlist Dictionary'
