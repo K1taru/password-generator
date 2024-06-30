@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip> // For setw and setfill
+#include <string>
 #include <cmath> // For pow exponents
 using namespace std;
 
@@ -13,13 +14,17 @@ using namespace std;
 
 // Prompt user for password generation configuration
 void PromptUser(bool& useNumbers, bool& useLowercase, bool& useUppercase, bool& useSymbols, string& prefix, int& passwordLength) {
-        // Ask for use of prefix string
     int usePrefix;
     cout << "Include prefix string to prepend before each generated password? (1 for yes, 0 for no): ";
     cin >> usePrefix;
+    if (usePrefix == true) {
+        cout << "Enter prefix string to prepend before each generated password: ";
+        cin >> prefix;
+    } else {
+        prefix = "";
+    }
 
-        // Ask for character types to include
-    cout << "Include numbers (0-9)? (1 for yes, for = no): ";
+    cout << "Include numbers (0-9)? (1 for yes, 0 for no): ";
     cin >> useNumbers;
     cout << "Include lowercase letters (a-z)? (1 for yes, 0 for no): ";
     cin >> useLowercase;
@@ -28,21 +33,30 @@ void PromptUser(bool& useNumbers, bool& useLowercase, bool& useUppercase, bool& 
     cout << "Include symbols (!@#$%^&*()_-+=[]{}|;:,.<>?)? (1 for yes, 0 for no): ";
     cin >> useSymbols;
 
-    if (usePrefix == true) {
-        cout << "Enter prefix string to prepend before each generated password: ";
-        cin >> prefix;
-    } else {
-        prefix = "";
-    }
 
-        // For password length
     cout << "Enter the length of each password to generate (in characters): ";
     cin >> passwordLength;
 }
 
 // Password generator fuction
-void GeneratePasswords() {
-
+void GeneratePassword(ofstream& outfile, const string& charset, int passwordLength, int& passwordCount, int totalPasswordCount, const string& prefix, string current = "") {
+    if (passwordLength == 0) {
+        if (!prefix.empty()) {
+            outfile << prefix << current << endl;
+        } else {
+            outfile << current << endl;
+        }
+        passwordCount++;
+        if (passwordCount % 1000 == 0 || passwordCount == totalPasswordCount) {
+            cout << "Password generated: " << setw(8) << setfill(' ') << passwordCount << " / " << totalPasswordCount << "\r";
+            cout.flush();
+        }
+        return;
+    }
+    // Recursive function call to build password
+    for (char c : charset) {
+        GeneratePassword(outfile, charset, passwordLength - 1, passwordCount, totalPasswordCount, prefix, current + c);
+    }
 }
 
 int main() {
@@ -68,15 +82,15 @@ int main() {
         if (useUppercase == true) charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         if (useSymbols == true) charset += "!@#$%^&*()_-+=[]{}|;:,.<>?";
 
-        int totalPassword;
+        int totalPasswordCount = 0;
         if (charset.size() != 0 && passwordLength > 0) {
-            totalPassword = pow(charset.size(), passwordLength); // Determine count of total password
+            totalPasswordCount = pow(charset.size(), passwordLength);
         }
         
         ofstream outfile(filePath);
         if (outfile.is_open()) {
-            int count = 0;
-            
+            int passwordCount = 0;
+            GeneratePassword(outfile, charset, passwordLength, passwordCount, totalPasswordCount, prefix);
             outfile.close();
             cout << "\nGenerated passwords saved successfully to: " << filePath << endl;
         }
