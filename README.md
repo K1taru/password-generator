@@ -6,3 +6,6 @@ included with password-specifier (idk how to call it) and a prepend option
 can be used to generate password list that can be used for dictionary attacks.
 
 its for educational purposes (at least for myself). use for your own risk (I will not be responsible for any damages :D)
+
+
+I'll probably update this when I'll be using a linux machine LOL :D
